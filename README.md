@@ -34,3 +34,12 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Private shandcd registry
+
+1. Install the CLI with your preferred package runner: `bunx --bun shadcn@latest init`
+2. Follow the prompts to point the installer at your scoped registry URL and paste the access token it requires.
+3. From there you can pull down components with `bunx --bun shadcn@latest add button card` (or any other name you share via the private registry) and they land inside `components/ui`.
+4. Continue iterating by editing the exported slots (for example, `components/ui/button.tsx` and `components/ui/card.tsx` already serve as the foundation shown on `app/page.tsx`).
+
+Keep the CLI in sync with your private registry by re-running the `init` command when you add new permissions or rotate the token.
