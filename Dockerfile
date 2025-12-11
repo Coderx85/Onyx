@@ -1,4 +1,4 @@
-FROM oven/bun:latest AS base
+FROM oven/bun:1.2-debian AS base
 WORKDIR /app
 
 FROM base AS install
@@ -15,8 +15,19 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
-FROM prerelease AS build
-RUN bun run build
+# Use Node.js for build (Bun has compatibility issues with Next.js 16 Turbopack)
+FROM node:20-slim AS build
+WORKDIR /app
+COPY --from=prerelease /app ./
+ARG BETTER_AUTH_SECRET
+ARG BETTER_AUTH_URL
+ARG NEXT_PUBLIC_APP_URL
+ARG DATABASE_URL
+ENV BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET
+ENV BETTER_AUTH_URL=$BETTER_AUTH_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV DATABASE_URL=$DATABASE_URL
+RUN npm run build
 
 FROM base AS release
 WORKDIR /app
