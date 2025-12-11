@@ -1,3 +1,4 @@
+import { dummyUser } from "@/lib";
 import { db } from "./client";
 import { users } from "./schema";
 import { eq } from "drizzle-orm";
@@ -8,7 +9,7 @@ async function seed() {
     const existingUser = await db
       .select()
       .from(users)
-      .where(eq(users.email, "test@example.com"))
+      .where(eq(users.email, dummyUser.email))
       .limit(1);
 
     if (existingUser.length > 0) {
@@ -17,14 +18,7 @@ async function seed() {
     }
 
     // Insert test user (password should be hashed in production)
-    const result = await db
-      .insert(users)
-      .values({
-        name: "Test User",
-        email: "test@example.com",
-        password: "hashed_password_123", // In production, use bcrypt or similar
-      })
-      .returning();
+    const result = await db.insert(users).values(dummyUser).returning();
 
     console.log("✅ Test user created successfully:", result);
   } catch (error) {
