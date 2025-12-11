@@ -1,4 +1,10 @@
-import { NewUser } from "@/db/schema";
+import { users } from "@/db/schema";
+import { createInsertSchema } from "drizzle-zod";
+import z from "zod";
+
+const inserUserSchema = createInsertSchema(users);
+
+type NewUser = z.infer<typeof inserUserSchema>;
 
 export const dummyUser: NewUser = {
   name: "Test User",
