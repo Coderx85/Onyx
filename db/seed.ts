@@ -1,15 +1,16 @@
-import { dummyUser } from "@/lib";
+import { auth } from "@/auth";
 import { db } from "./client";
-import { users } from "./schema";
+import { user } from "./schema";
 import { eq } from "drizzle-orm";
+import { dummyUser } from "@/lib/config";
 
 async function seed() {
   try {
     // Check if test user already exists
     const existingUser = await db
       .select()
-      .from(users)
-      .where(eq(users.email, dummyUser.email))
+      .from(user)
+      .where(eq(user.email, dummyUser.email))
       .limit(1);
 
     if (existingUser.length > 0) {
@@ -17,10 +18,16 @@ async function seed() {
       return;
     }
 
-    // Insert test user (password should be hashed in production)
-    const result = await db.insert(users).values(dummyUser).returning();
+    // Use better-auth API to create user with proper password hashing
+    const result = await auth.api.signUpEmail({
+      body: {
+        email: dummyUser.email,
+        password: dummyUser.password,
+        name: dummyUser.name,
+      },
+    });
 
-    console.log("✅ Test user created successfully:", result);
+    console.log("✅ Test user created successfully:", result.user);
   } catch (error) {
     console.error("❌ Error seeding database:", error);
     process.exit(1);

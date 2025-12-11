@@ -1,6 +1,7 @@
 import { NewUser } from "@/types/Tdb";
 
 export const dummyUser: NewUser = {
+  id: "userId",
   name: "Test User",
   email: "test@example.com",
   password: "test@123",
@@ -8,7 +9,7 @@ export const dummyUser: NewUser = {
 };
 
 export const config = {
-  jwt_secret: process.env.JWT_SECRET,
+  betterAuthSecret: process.env.BETTER_AUTH_SECRET,
   database: process.env.DATABASE_URL,
   dummyUser,
 };
