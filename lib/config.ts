@@ -9,6 +9,7 @@ export const dummyUser: NewUser = {
 };
 
 export const config = {
+  NODE_ENV: process.env.NODE_ENV,
   betterAuthSecret: process.env.BETTER_AUTH_SECRET,
   database: process.env.DATABASE_URL,
   dummyUser,
