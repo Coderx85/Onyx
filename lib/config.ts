@@ -1,15 +1,10 @@
-import { users } from "@/db/schema";
-import { createInsertSchema } from "drizzle-zod";
-import z from "zod";
-
-const inserUserSchema = createInsertSchema(users);
-
-type NewUser = z.infer<typeof inserUserSchema>;
+import { NewUser } from "@/types/Tdb";
 
 export const dummyUser: NewUser = {
   name: "Test User",
   email: "test@example.com",
   password: "test@123",
+  confirmPassword: "test@123",
 };
 
 export const config = {
