@@ -21,15 +21,15 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/onyx:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/onyx:latest
           build-args: |
             BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
             BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
@@ -39,4 +39,4 @@ jobs:
       - name: Deployed to Docker Hub
         run: |
           echo "Docker image built and pushed successfully."
-          echo "Image: https://hub.docker.com/r/${{ secrets.DOCKER_USERNAME }}/onyx"
+          echo "Image: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/onyx"
