@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,6 +10,15 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { ServerCogIcon, ServerCrashIcon } from "lucide-react";
 
 interface SessionEvent {
   timestamp: string;
@@ -121,16 +130,32 @@ const AnalyticsPage = () => {
               ))}
             </div>
           ) : error ? (
-            <div className="rounded-lg bg-red-50 p-4 text-red-700">
-              <p className="font-semibold">Error loading session logs</p>
-              <p className="text-sm mt-1">{error}</p>
-              <p className="text-sm mt-2 text-red-600">
-                Make sure Loki is running and accessible at{" "}
-                <code className="bg-red-100 px-2 py-1 rounded-xs">
-                  {process.env.NEXT_PUBLIC_LOKI_URL || "http://localhost:3100"}
-                </code>
-              </p>
-            </div>
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia>
+                  {process.env.NODE_ENV === "production" ? (
+                    <ServerCogIcon />
+                  ) : (
+                    <ServerCrashIcon />
+                  )}
+                </EmptyMedia>
+                <EmptyTitle>
+                  {process.env.NODE_ENV === "production"
+                    ? "Session Logs Unavailable"
+                    : "Session Logs Not Loaded"}
+                </EmptyTitle>
+                <EmptyDescription>{error}</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent className="w-full max-w-2xl">
+                {/* For production, Loki, Grafana and Vector are not deployed in the production environment. */}
+                {/* For development. the loki, vector and grafana is not started yet. */}
+                <p className="text-sm text-gray-500">
+                  {process.env.NODE_ENV === "production"
+                    ? "Contact support if you believe this is an error."
+                    : "Start the observability stack using Docker Compose with the 'obs' profile."}
+                </p>
+              </EmptyContent>
+            </Empty>
           ) : events.length === 0 ? (
             <div className="rounded-lg bg-gray-50 p-8 text-center">
               <p className="text-gray-600">No session events found</p>
