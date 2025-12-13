@@ -1,3 +1,4 @@
+import { config } from "@/lib";
 import { NextRequest, NextResponse } from "next/server";
 
 interface LokiStream {
@@ -30,8 +31,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const hours = parseInt(searchParams.get("hours") || "168", 10);
-
-    const lokiUrl = process.env.LOKI_URL || "http://localhost:3100";
     const endTime = Math.floor(Date.now() * 1_000_000); // nanoseconds
     const startTime = endTime - hours * 60 * 60 * 1_000_000_000;
 
@@ -41,7 +40,7 @@ export async function GET(request: NextRequest) {
     );
 
     const lokiResponse = await fetch(
-      `${lokiUrl}/loki/api/v1/query_range?query=${query}&start=${startTime}&end=${endTime}&limit=1000`,
+      `${config.lokiURL}/loki/api/v1/query_range?query=${query}&start=${startTime}&end=${endTime}&limit=1000`,
       {
         method: "GET",
         headers: {

@@ -17,6 +17,8 @@
  * ```
  */
 
+import { config } from "./config";
+
 type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LokiStream {
@@ -33,8 +35,7 @@ interface LogMetadata {
 }
 
 // Configuration
-const LOKI_URL = process.env.LOKI_URL || "http://localhost:3100";
-const LOKI_PUSH_ENDPOINT = `${LOKI_URL}/loki/api/v1/push`;
+const LOKI_PUSH_ENDPOINT = `${config.lokiURL}/loki/api/v1/push`;
 const IS_DEV = process.env.NODE_ENV === "development";
 
 /**
