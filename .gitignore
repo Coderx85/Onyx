@@ -17,6 +17,10 @@
 /.next/
 /out/
 
+# github actions 
+.actrc
+.secrets
+
 # production
 /build
 
@@ -31,7 +35,10 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+.env.development
+.env.test
+.env.production
+.secrets
 
 # vercel
 .vercel

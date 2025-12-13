@@ -9,8 +9,11 @@ export const dummyUser: NewUser = {
 };
 
 export const config = {
-  NODE_ENV: process.env.NODE_ENV,
-  betterAuthSecret: process.env.BETTER_AUTH_SECRET,
-  database: process.env.DATABASE_URL,
+  betterAuthSecret: process.env.BETTER_AUTH_SECRET || "your-secret-key",
+  database:
+    process.env.DATABASE_URL ||
+    "postgresql://user:password@localhost:5432/dbname",
   dummyUser,
+  lokiURL: process.env.LOKI_URL || "http://localhost:3100",
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
 };
