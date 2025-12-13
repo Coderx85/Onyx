@@ -11,6 +11,7 @@
     "docker:dev": "docker compose -f docker-compose.dev.yaml",
     "docker:obs": "docker compose -f docker-compose.dev.yaml --profile obs",
     "with-dev-env": "dotenv -e .env.development --",
+    "with-prod-env": "dotenv -e .env.production --",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
