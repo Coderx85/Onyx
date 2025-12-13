@@ -24,10 +24,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export function NavUser() {
   const { data: session } = useSession();
+  const router = useRouter();
   const user = {
     name: session?.user?.name || "User Name",
     email: session?.user?.email || "user@example.com",
@@ -97,7 +99,12 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                authClient.signOut();
+                router.push("/auth/login");
+              }}
+            >
               <LogOutIcon />
               Log out
             </DropdownMenuItem>

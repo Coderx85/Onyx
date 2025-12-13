@@ -3,27 +3,29 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "@/lib/auth-client";
+import { signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function SignInPage() {
+export default function SignUpPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    const result = await signIn.email({
+    const result = await signUp.email({
       email,
       password,
+      name,
     });
 
     if (result.error) {
@@ -31,7 +33,7 @@ export default function SignInPage() {
         result.error.message ||
         result.error.statusText ||
         JSON.stringify(result.error) ||
-        "Sign in failed";
+        "Sign up failed";
       setError(errorMessage);
     } else {
       router.refresh();
@@ -43,13 +45,14 @@ export default function SignInPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="max-w-md w-full">
+      <Card className="max-w-xl w-full">
         <CardHeader>
           <CardTitle className="text-center text-2xl">
-            Sign in to your account
+            Create your account
           </CardTitle>
         </CardHeader>
-        <form className="space-y-6 px-6 pb-6" onSubmit={handleSignIn}>
+
+        <form className="space-y-6 px-6 pb-6" onSubmit={handleSignUp}>
           {error && (
             <div className="rounded-md bg-destructive/10 p-4 border border-destructive/20">
               <div className="text-sm font-medium text-destructive">
@@ -57,8 +60,21 @@ export default function SignInPage() {
               </div>
             </div>
           )}
-          <div className="space-y-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-5 py-3">
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                required
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-3">
               <Label htmlFor="email">Email address</Label>
               <Input
                 id="email"
@@ -71,31 +87,42 @@ export default function SignInPage() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-3">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Input
+                id="confirm-password"
+                name="confirm-password"
+                type="password"
+                autoComplete="new-password"
+                required
+                placeholder="Confirm Password"
+              />
+            </div>
           </div>
 
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Creating account..." : "Sign up"}
           </Button>
 
           <div className="text-center">
             <Link
-              href="/sign-up"
+              href="/auth/login"
               className="text-sm font-medium text-primary hover:underline"
             >
-              Don't have an account? Sign up
+              Already have an account? Sign in
             </Link>
           </div>
         </form>

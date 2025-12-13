@@ -130,6 +130,7 @@ export const auth = betterAuth({
           userAgent,
           ip,
         });
+        ctx.redirect("/");
       } else if (path.includes("/session")) {
         authLogger.debug("Session validation request", {
           path,
