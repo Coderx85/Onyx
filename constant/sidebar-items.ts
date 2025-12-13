@@ -1,5 +1,4 @@
 import {
-  LayoutDashboardIcon,
   BarChartIcon,
   FolderIcon,
   CameraIcon,
@@ -11,6 +10,7 @@ import {
   DatabaseIcon,
   ClipboardListIcon,
   FileIcon,
+  Monitor,
 } from "lucide-react";
 
 export const data = {
@@ -23,7 +23,7 @@ export const data = {
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: LayoutDashboardIcon,
+      icon: Monitor,
     },
     {
       title: "Analytics",

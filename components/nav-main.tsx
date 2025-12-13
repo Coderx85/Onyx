@@ -37,8 +37,7 @@ export function NavMain({
                   tooltip={item.title}
                   asChild
                   size={"lg"}
-                  variant={"outline"}
-                  className={cn(" px-3 ")}
+                  className="px-3"
                   isActive={pathname === item.url}
                 >
                   <Link href={item.url} onClick={() => router.push(item.url)}>

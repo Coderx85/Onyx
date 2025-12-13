@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowUpCircleIcon } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 
 // import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
@@ -28,11 +28,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
+              className="data-[slot=sidebar-menu-button]:p-3! text-primary hover:bg-transparent hover:text-primary focus:bg-transparent focus:text-primary active:bg-transparent active:text-primary"
             >
-              <Link href="/dashboard" className="flex items-center gap-2  ">
-                <ArrowUpCircleIcon className="h-5 w-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-3 [&>svg]:size-6"
+              >
+                <LayoutDashboard className="[&>svg]:size-10" />
+                <span className="text-2xl font-bold">Onyx.</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
