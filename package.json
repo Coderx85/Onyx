@@ -9,6 +9,7 @@
     "lint": "biome check",
     "format": "biome format --write",
     "docker:dev": "docker compose -f docker-compose.dev.yaml",
+    "docker:obs": "docker compose -f docker-compose.dev.yaml --profile obs",
     "with-dev-env": "dotenv -e .env.development --",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

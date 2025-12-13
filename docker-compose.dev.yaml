@@ -26,5 +26,63 @@ services:
       postgres:
         condition: service_healthy
 
+  # ============================================
+  # Observability Stack (Loki + Grafana + Vector)
+  # ============================================
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    profiles: ["obs"]
+    user: "0" # Run as root to avoid permission issues in dev
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./observability/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: grafana
+    profiles: ["obs"]
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      loki:
+        condition: service_healthy
+
+  vector:
+    image: timberio/vector:0.34.0-alpine
+    container_name: vector
+    profiles: ["obs"]
+    volumes:
+      - ./observability/vector.toml:/etc/vector/vector.toml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: ["--config", "/etc/vector/vector.toml"]
+    depends_on:
+      loki:
+        condition: service_healthy
+
 volumes:
   postgres-data:
+  loki-data:
+  grafana-data:

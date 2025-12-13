@@ -1,0 +1,56 @@
+# Vector.dev configuration for collecting Docker container logs
+# and forwarding them to Loki
+
+[api]
+enabled = true
+address = "0.0.0.0:8686"
+
+# Source: Docker container logs
+[sources.docker_logs]
+type = "docker_logs"
+include_containers = ["postgres", "neon-proxy", "loki", "grafana"]
+
+# Transform: Parse and enrich logs
+[transforms.parse_logs]
+type = "remap"
+inputs = ["docker_logs"]
+source = '''
+# Add timestamp if not present
+.timestamp = now()
+
+# Extract container name as a label
+.labels.container = .container_name
+
+# Try to parse JSON logs
+parsed, err = parse_json(.message)
+if err == null {
+  .parsed = parsed
+  .labels.level = parsed.level ?? "info"
+} else {
+  .labels.level = "info"
+}
+
+# Add service label
+.labels.service = "docker"
+.labels.source = "vector"
+'''
+
+# Sink: Send to Loki
+[sinks.loki]
+type = "loki"
+inputs = ["parse_logs"]
+endpoint = "http://loki:3100"
+encoding.codec = "json"
+
+# Labels for Loki
+labels.container = "{{ labels.container }}"
+labels.level = "{{ labels.level }}"
+labels.service = "{{ labels.service }}"
+labels.source = "{{ labels.source }}"
+
+# Healthcheck
+healthcheck.enabled = true
+
+# Buffer settings for reliability
+buffer.type = "memory"
+buffer.max_events = 1000
