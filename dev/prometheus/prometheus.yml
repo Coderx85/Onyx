@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "next-app"
+    metrics_path: /api/metrics
+    static_configs:
+      # Try host.docker.internal for Docker Desktop, and localhost for simple setups
+      - targets: ["host.docker.internal:3000", "localhost:3000"]
