@@ -27,8 +27,22 @@ interface SessionEvent {
  * Query Loki for session-related logs from Better Auth
  * GET /api/logs/sessions?hours=168 (default: last 7 days = 168 hours)
  */
-export async function GET(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
+    // attempt to record an incoming request immediately (debug)
+    try {
+      const mod = await import("@/lib/metrics");
+      await mod.observeRequest({
+        method: request.method ?? "GET",
+        route: "/api/logs/sessions",
+        status: 200,
+      });
+    } catch (e) {
+      // ignore errors importing metrics (some runtimes may not support prom-client)
+      // eslint-disable-next-line no-console
+      console.warn("Could not pre-record metrics for sessions handler", e);
+    }
+
     const { searchParams } = new URL(request.url);
     const hours = parseInt(searchParams.get("hours") || "168", 10);
     const endTime = Math.floor(Date.now() * 1_000_000); // nanoseconds
@@ -108,6 +122,56 @@ export async function GET(request: NextRequest) {
       (a, b) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
+    const start = new Date().getTime();
+    const durationMs = new Date().getTime() - start;
+
+    // observe metrics directly from handler (deterministic/debug)
+    try {
+      const mod = await import("@/lib/metrics");
+      // Primary: use the helper that records counter + histogram
+      await mod.observeRequest({
+        method: "GET",
+        route: "/api/logs/sessions",
+        status: 200,
+        durationMs,
+      });
+
+      // Extra deterministic increment in case helper paths fail to surface immediately
+      try {
+        if (
+          mod.httpRequestsTotal &&
+          typeof mod.httpRequestsTotal.inc === "function"
+        ) {
+          // increment the counter with explicit labels
+          mod.httpRequestsTotal.inc({
+            method: "GET",
+            route: "/api/logs/sessions",
+            status: "200",
+          });
+          // eslint-disable-next-line no-console
+          console.log("[sessions route] deterministic metric incremented");
+        }
+        if (
+          mod.httpRequestDurationSeconds &&
+          typeof mod.httpRequestDurationSeconds.observe === "function"
+        ) {
+          mod.httpRequestDurationSeconds.observe(
+            { method: "GET", route: "/api/logs/sessions", status: "200" },
+            durationMs / 1000
+          );
+        }
+      } catch (innerErr) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          "[sessions route] secondary metric increment failed",
+          innerErr
+        );
+      }
+    } catch (e) {
+      // no-op if metrics module cannot be imported in this runtime (edge etc)
+      // eslint-disable-next-line no-console
+      console.warn("Could not record metrics from sessions handler", e);
+    }
 
     return NextResponse.json({
       success: true,
@@ -127,3 +191,11 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+import { withMetrics } from "@/lib/withMetrics";
+
+export const GET = withMetrics(handler, "/api/logs/sessions");
+
+// debug: indicate module load
+// eslint-disable-next-line no-console
+console.log("[sessions route] module loaded, GET exported");
