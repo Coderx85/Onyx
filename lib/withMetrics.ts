@@ -3,7 +3,7 @@ import { observeRequest, inFlightInc, inFlightDec } from "./metrics";
 
 export function withMetrics(
   handler: (req: NextRequest) => Promise<Response>,
-  routeName = "unknown"
+  routeName = "unknown",
 ) {
   return async function (req: NextRequest) {
     const method = (req.method || "GET").toUpperCase();
@@ -25,7 +25,7 @@ export function withMetrics(
       const durationMs = Date.now() - start;
       // eslint-disable-next-line no-console
       console.log(
-        `[withMetrics] ${method} ${route} - status ${status} duration ${durationMs}ms`
+        `[withMetrics] ${method} ${route} - status ${status} duration ${durationMs}ms`,
       );
       observeRequest({ method, route, status, durationMs }).catch(() => {});
       return res;
@@ -33,10 +33,10 @@ export function withMetrics(
       const durationMs = Date.now() - start;
       // eslint-disable-next-line no-console
       console.log(
-        `[withMetrics] ${method} ${route} - error after ${durationMs}ms`
+        `[withMetrics] ${method} ${route} - error after ${durationMs}ms`,
       );
       observeRequest({ method, route, status: 500, durationMs }).catch(
-        () => {}
+        () => {},
       );
       throw err;
     } finally {

@@ -42,7 +42,10 @@ export async function observeRequest(opts: {
   try {
     httpRequestsTotal.inc({ method, route, status });
     if (typeof opts.durationMs === "number") {
-      httpRequestDurationSeconds.observe({ method, route, status }, opts.durationMs / 1000);
+      httpRequestDurationSeconds.observe(
+        { method, route, status },
+        opts.durationMs / 1000,
+      );
     }
   } catch (e) {
     // guard against any metrics failures — do not throw

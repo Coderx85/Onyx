@@ -50,7 +50,7 @@ async function handler(request: NextRequest) {
 
     // Query Loki for session logs
     const query = encodeURIComponent(
-      '{service="better-auth", component="session"} | json'
+      '{service="better-auth", component="session"} | json',
     );
 
     const lokiResponse = await fetch(
@@ -60,14 +60,14 @@ async function handler(request: NextRequest) {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (!lokiResponse.ok) {
       console.error("Loki query failed:", lokiResponse.statusText);
       return NextResponse.json(
         { error: "Failed to fetch logs from Loki" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -76,7 +76,7 @@ async function handler(request: NextRequest) {
     if (data.status !== "success") {
       return NextResponse.json(
         { error: "Loki query unsuccessful" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -120,7 +120,7 @@ async function handler(request: NextRequest) {
     // Sort by timestamp descending (newest first)
     events.sort(
       (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
     const start = new Date().getTime();
     const durationMs = new Date().getTime() - start;
@@ -157,14 +157,14 @@ async function handler(request: NextRequest) {
         ) {
           mod.httpRequestDurationSeconds.observe(
             { method: "GET", route: "/api/logs/sessions", status: "200" },
-            durationMs / 1000
+            durationMs / 1000,
           );
         }
       } catch (innerErr) {
         // eslint-disable-next-line no-console
         console.warn(
           "[sessions route] secondary metric increment failed",
-          innerErr
+          innerErr,
         );
       }
     } catch (e) {
@@ -187,7 +187,7 @@ async function handler(request: NextRequest) {
     console.error("Error fetching session logs:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

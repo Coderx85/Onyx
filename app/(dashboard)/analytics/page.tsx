@@ -53,7 +53,7 @@ const AnalyticsPage = () => {
         setError(null);
 
         const response = await fetch(
-          `/api/logs/sessions?hours=${timeRange.hours}`
+          `/api/logs/sessions?hours=${timeRange.hours}`,
         );
 
         if (!response.ok) {
@@ -69,7 +69,7 @@ const AnalyticsPage = () => {
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "An unexpected error occurred"
+          err instanceof Error ? err.message : "An unexpected error occurred",
         );
       } finally {
         setLoading(false);

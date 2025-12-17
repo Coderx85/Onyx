@@ -19,7 +19,7 @@ export const user = pgTable(
     createdAt: timestamp("createdAt").notNull().defaultNow(),
     updatedAt: timestamp("updatedAt").notNull().defaultNow(),
   },
-  (table) => [uniqueIndex("user_email_idx").on(table.email)]
+  (table) => [uniqueIndex("user_email_idx").on(table.email)],
 );
 
 // Better Auth Session Table
@@ -40,7 +40,7 @@ export const session = pgTable(
   (table) => [
     index("session_userId_idx").on(table.userId),
     index("session_token_idx").on(table.token),
-  ]
+  ],
 );
 
 // Better Auth Account Table (stores password hashes and OAuth credentials)
@@ -63,7 +63,7 @@ export const account = pgTable(
     createdAt: timestamp("createdAt").notNull().defaultNow(),
     updatedAt: timestamp("updatedAt").notNull().defaultNow(),
   },
-  (table) => [index("account_userId_idx").on(table.userId)]
+  (table) => [index("account_userId_idx").on(table.userId)],
 );
 
 // Better Auth Verification Table
@@ -77,5 +77,5 @@ export const verification = pgTable(
     createdAt: timestamp("createdAt").defaultNow(),
     updatedAt: timestamp("updatedAt"),
   },
-  (table) => [index("verification_identifier_idx").on(table.identifier)]
+  (table) => [index("verification_identifier_idx").on(table.identifier)],
 );

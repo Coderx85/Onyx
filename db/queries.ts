@@ -23,7 +23,7 @@ export async function getAlluser() {
 // Example: Update user
 export async function updateUser(
   id: string,
-  data: Partial<{ name: string; email: string }>
+  data: Partial<{ name: string; email: string }>,
 ) {
   return db.update(user).set(data).where(eq(user.id, id)).returning();
 }

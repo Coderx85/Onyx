@@ -50,7 +50,7 @@ export async function pushToLoki(
   level: LogLevel,
   message: string,
   metadata: LogMetadata = {},
-  labels: Record<string, string> = {}
+  labels: Record<string, string> = {},
 ): Promise<void> {
   // Only push to Loki in development mode
   if (!IS_DEV) {
@@ -100,7 +100,7 @@ export async function pushToLoki(
  */
 export function createLokiLogger(
   service: string,
-  defaultLabels: Record<string, string> = {}
+  defaultLabels: Record<string, string> = {},
 ) {
   const labels = { service, ...defaultLabels };
 
