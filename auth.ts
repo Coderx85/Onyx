@@ -102,6 +102,20 @@ export const auth = betterAuth({
         headers?.get?.("x-real-ip") ||
         "unknown";
 
+      try {
+        // store start info on the context for the after hook
+        (ctx as any)._metricsStart = Date.now();
+        (ctx as any)._metricsRoute = path;
+        (ctx as any)._metricsMethod = method;
+        // lazy import to avoid forcing prom-client on client or edge runtimes
+        const { inFlightInc } = await import("@/lib/metrics");
+        inFlightInc(path);
+      } catch (err) {
+        // don't let metrics errors affect auth flow
+        // eslint-disable-next-line no-console
+        console.warn("metrics start failed", err);
+      }
+
       // Log authentication attempts
       if (path.includes("/sign-in")) {
         authLogger.info("Sign-in attempt by Before:hook", {
@@ -148,6 +162,22 @@ export const auth = betterAuth({
     after: createAuthMiddleware(async (ctx) => {
       const { path, context } = ctx;
       const response = context.returned;
+      const start = (ctx as any)._metricsStart;
+      const method = (ctx as any)._metricsMethod || "UNKNOWN";
+      const route = (ctx as any)._metricsRoute || path;
+      const status = response instanceof Response ? response.status : 0;
+      const durationMs =
+        typeof start === "number" ? Date.now() - start : undefined;
+
+      // Observe metrics (time + status)
+      try {
+        const { observeRequest, inFlightDec } = await import("@/lib/metrics");
+        await observeRequest({ method, route, status, durationMs });
+        inFlightDec(route);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn("metrics observe failed", err);
+      }
 
       // Log authentication results
       if (path.includes("/sign-in") || path.includes("/sign-up")) {
